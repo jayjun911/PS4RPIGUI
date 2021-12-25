@@ -2,6 +2,7 @@
   "profiles": {
     "PS4RPI": {
       "commandName": "Project",
+      "commandLineArgs": "/lb-all \"E:\\[PS4]\\DJMAX RESPECT [CUSA08621][Game][v0 1.00].pkg\"",
       "nativeDebugging": false
     }
   }

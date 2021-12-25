@@ -1,26 +1,21 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\sonik\\Documents\\Visual Studio 2019\\Projects\\PS4RPI\\PS4RPI\\PS4RPI.csproj": {}
+    "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI.csproj": {}
   },
   "projects": {
-    "C:\\Users\\sonik\\Documents\\Visual Studio 2019\\Projects\\PS4RPI\\PS4RPI\\PS4RPI.csproj": {
+    "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\sonik\\Documents\\Visual Studio 2019\\Projects\\PS4RPI\\PS4RPI\\PS4RPI.csproj",
+        "projectUniqueName": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI.csproj",
         "projectName": "PS4RPI",
-        "projectPath": "C:\\Users\\sonik\\Documents\\Visual Studio 2019\\Projects\\PS4RPI\\PS4RPI\\PS4RPI.csproj",
-        "packagesPath": "C:\\Users\\sonik\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\sonik\\Documents\\Visual Studio 2019\\Projects\\PS4RPI\\PS4RPI\\obj\\",
+        "projectPath": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI.csproj",
+        "packagesPath": "C:\\Users\\Jay Jun\\.nuget\\packages\\",
+        "outputPath": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\obj\\",
         "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Microsoft\\Xamarin\\NuGet\\",
-          "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
-        ],
         "configFilePaths": [
-          "C:\\Users\\sonik\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Xamarin.Offline.config"
+          "C:\\Users\\Jay Jun\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "netcoreapp3.1"
@@ -47,11 +42,15 @@
           "dependencies": {
             "ByteSize": {
               "target": "Package",
-              "version": "[2.0.0, )"
+              "version": "[2.1.1, )"
             },
             "Newtonsoft.Json": {
               "target": "Package",
-              "version": "[12.0.3, )"
+              "version": "[13.0.1, )"
+            },
+            "WinCopies.WindowsAPICodePack.Shell": {
+              "target": "Package",
+              "version": "[2.10.2, )"
             }
           },
           "imports": [
@@ -75,7 +74,7 @@
               "privateAssets": "none"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.101\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\5.0.404\\RuntimeIdentifierGraph.json"
         }
       }
     }

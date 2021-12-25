@@ -7,16 +7,12 @@
         mc:Ignorable="d"
         Title="Settings" Height="290" Width="500"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize">
-    <Grid>
+    <Grid Margin="0,0,0,0">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="2*"/>
+            <RowDefinition Height="1*"/>
+
         </Grid.RowDefinitions>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*"/>
@@ -55,25 +51,9 @@
         </GroupBox>
 
 
-        <GroupBox Grid.Row="4" Grid.ColumnSpan="2" Header="PKG Folder" Margin="5">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
 
-                <TextBox Grid.Column="0" Text="{Binding Folder, UpdateSourceTrigger=PropertyChanged}"/>
-                <Button Grid.Column="1" Click="ButtonFolder_Click" HorizontalAlignment="Left" ToolTip="Choose Folder">
-                    <Viewbox Width="18" Height="18" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-                        <Canvas Width="24" Height="24">
-                            <Path Data="M19,20H4C2.89,20 2,19.1 2,18V6C2,4.89 2.89,4 4,4H10L12,6H19A2,2 0 0,1 21,8H21L4,8V18L6.14,10H23.21L20.93,18.5C20.7,19.37 19.92,20 19,20Z" Fill="Black" />
-                        </Canvas>
-                    </Viewbox>
-                </Button>
-            </Grid>
-        </GroupBox>
 
-        <Button Grid.Row="7" Grid.Column="0" Margin="5 10" Click="ButtonSave_Click">Save Settings</Button>
-        <Button Grid.Row="7" Grid.Column="1" Margin="5 10" IsDefault="True" FontWeight="Bold" Click="ButtonOk_Click">Start</Button>
+        <Button Grid.Row="6" Grid.Column="0" Margin="5 10" Click="ButtonSave_Click">Save Settings</Button>
+        <Button Grid.Row="6" Grid.Column="1" Margin="5 10" IsDefault="True" FontWeight="Bold" Click="ButtonOk_Click">Start</Button>
     </Grid>
 </Window>

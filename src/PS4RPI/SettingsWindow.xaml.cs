@@ -73,8 +73,7 @@ namespace PS4RPI
                 PcPort = pcport;
 
             Ps4Ip = ConfigurationManager.AppSettings["ps4ip"];
-            Folder = ConfigurationManager.AppSettings["folder_or_url"];
-
+            
             if (string.IsNullOrEmpty(PcIp))
                 PcIp = LocalIpList.FirstOrDefault();
         }
@@ -110,13 +109,7 @@ namespace PS4RPI
             {
                 MessageBox.Show("Invalid PS4 IP", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
-            }
-
-            if (string.IsNullOrWhiteSpace(Folder) || !new System.IO.DirectoryInfo(Folder).Exists)
-            {
-                MessageBox.Show("Invalid Folder", "Error", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+            }            
 
             DialogResult = true;
         }
@@ -130,17 +123,16 @@ namespace PS4RPI
                 config.AppSettings.Settings.Clear();
                 config.AppSettings.Settings.Add("pcip", PcIp);
                 config.AppSettings.Settings.Add("pcport", PcPort.ToString());
-                config.AppSettings.Settings.Add("ps4ip", Ps4Ip);
-                config.AppSettings.Settings.Add("folder_or_url", Folder.Trim());
+                config.AppSettings.Settings.Add("ps4ip", Ps4Ip);                
 
                 config.Save(ConfigurationSaveMode.Modified);
                 ConfigurationManager.RefreshSection("appSettings");
 
                 MessageBox.Show("Settings Saved!", "Saved", MessageBoxButton.OK, MessageBoxImage.Information);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                MessageBox.Show("Error!", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Error!", ex.Message, MessageBoxButton.OK, MessageBoxImage.Error);
                 Close();
             }
         }

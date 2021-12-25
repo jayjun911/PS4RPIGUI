@@ -83,7 +83,7 @@ namespace PS4_Tools.LibOrbis.SFO
         /// 
         /// </summary>
         /// <returns>A tuple containing the offset of the data table and the total file size.</returns>
-        private Tuple<int, int> CalcSize()
+        private Util.Tuple<int, int> CalcSize()
         {
             int keyTableSize = 0x0;
             int dataSize = 0x0;
@@ -95,7 +95,7 @@ namespace PS4_Tools.LibOrbis.SFO
             }
             int dataTableOffset = keyTableOffset + keyTableSize;
             if (dataTableOffset % 4 != 0) dataTableOffset += 4 - (dataTableOffset % 4);
-            return Tuple.Create(dataTableOffset, dataSize + dataTableOffset);
+            return Util.Tuple.Create(dataTableOffset, dataSize + dataTableOffset);
         }
 
         public static ParamSfo DefaultAC = new ParamSfo()
