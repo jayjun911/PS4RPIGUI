@@ -1,0 +1,47 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Version>1.0</Version>
+    <ApplicationIcon>playstation-icon-24.ico</ApplicationIcon>
+    <AssemblyName>PS4RPI Reloaded</AssemblyName>
+    <RootNamespace>PS4RPIReloaded</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ByteSize" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="DiscUtils">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\DiscUtils.dll</HintPath>
+    </Reference>
+    <Reference Include="DotNetZip">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\DotNetZip.dll</HintPath>
+    </Reference>
+    <Reference Include="GameArchives">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\GameArchives.dll</HintPath>
+    </Reference>
+    <Reference Include="HtmlAgilityPack">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\HtmlAgilityPack.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PARAM.SFO">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\PARAM.SFO.dll</HintPath>
+    </Reference>
+    <Reference Include="PS4_Tools">
+      <HintPath>..\..\..\PS4_Tools\PS4_Tools\bin\Debug\PS4_Tools.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>

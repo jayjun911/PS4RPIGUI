@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace PS4RPI.Models
+namespace PS4RPIReloaded.Models
 {
     class RequestTaskID
     {

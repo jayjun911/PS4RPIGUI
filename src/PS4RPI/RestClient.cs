@@ -1,5 +1,5 @@
 ﻿using Newtonsoft.Json;
-using PS4RPI.Models;
+using PS4RPIReloaded.Models;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace PS4RPI
+namespace PS4RPIReloaded
 {
     internal class RestClient
     {

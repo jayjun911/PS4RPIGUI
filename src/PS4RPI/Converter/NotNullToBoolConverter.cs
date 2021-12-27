@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Windows.Data;
 
-namespace PS4RPI.Converter
+namespace PS4RPIReloaded.Converter
 {
     class NotNullToBoolConverter : IValueConverter
     {

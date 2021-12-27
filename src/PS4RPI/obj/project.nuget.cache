@@ -1,20 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "U7Xn3cXkmO/Dk1qAmdcMZYRh4f1UEZMKm0/Wu8nN/u8ugVLcIQjZ8KD4KYTUr2TO36AmsjxwA1IrAe7n2POPoQ==",
+  "dgSpecHash": "omkpomFt5GoBYJae1fZ2eBbZU+eYLIQtHx9cjUJ8sPaA/x6yzF6JcGlIAF10UfuBcAyA8ThJik0SqzHdsYc70Q==",
   "success": true,
-  "projectFilePath": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI.csproj",
+  "projectFilePath": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI Reloaded.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\bytesize\\2.1.1\\bytesize.2.1.1.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft.netcore.platforms\\3.1.0\\microsoft.netcore.platforms.3.1.0.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft.win32.systemevents\\4.7.0\\microsoft.win32.systemevents.4.7.0.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\newtonsoft.json\\13.0.1\\newtonsoft.json.13.0.1.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\system.drawing.common\\4.7.0\\system.drawing.common.4.7.0.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\wincopies.util\\2.15.1\\wincopies.util.2.15.1.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\wincopies.windowsapicodepack\\2.9.3\\wincopies.windowsapicodepack.2.9.3.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\wincopies.windowsapicodepack.comnative\\2.9.1\\wincopies.windowsapicodepack.comnative.2.9.1.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\wincopies.windowsapicodepack.consts\\2.9.0\\wincopies.windowsapicodepack.consts.2.9.0.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\wincopies.windowsapicodepack.shell\\2.10.2\\wincopies.windowsapicodepack.shell.2.10.2.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\wincopies.windowsapicodepack.win32native\\2.10.0\\wincopies.windowsapicodepack.win32native.2.10.0.nupkg.sha512"
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\bytesize\\2.1.1\\bytesize.2.1.1.nupkg.sha512"
   ],
   "logs": []
 }

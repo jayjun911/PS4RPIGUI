@@ -6,7 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace PS4RPI
+namespace PS4RPIReloaded
 {
     /// <summary>
     /// Interaction logic for App.xaml
