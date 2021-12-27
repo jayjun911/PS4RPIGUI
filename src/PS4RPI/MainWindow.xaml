@@ -52,7 +52,7 @@
 
 
         <GroupBox Grid.Row="2" Header="PKG list" IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolToInverseBool}}">
-            <DataGrid SelectionMode="Extended" x:Name="lbPackage" DisplayMemberPath="Name" ItemsSource="{Binding RootDirectoryItems, Mode=Oneway}" AutoGenerateColumns="False"  CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="True" IsReadOnly="False" AllowDrop="True"  Drop="lbPackage_Drop" UnloadingRow="lbPackage_UnloadingRow">
+            <DataGrid SelectionMode="Extended" x:Name="lbPackage" DisplayMemberPath="Name" ItemsSource="{Binding RootDirectoryItems, Mode=Oneway}" AutoGenerateColumns="False"  CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" AllowDrop="True"  Drop="lbPackage_Drop" MouseDoubleClick="lbPackage_MouseDoubleClick" PreviewKeyUp="lbPackage_PreviewKeyUp">
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -90,23 +90,24 @@
             </DataGrid>
         </GroupBox>
 
-        <DockPanel Grid.Row="3" HorizontalAlignment="Stretch" IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolToInverseBool}}">
-
-            <Button DockPanel.Dock="Right" Margin="5" ToolTip="About" Click="ButtonAbout_Click">
+        <DockPanel Grid.Row="3" HorizontalAlignment="Right" IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolToInverseBool}}">
+            <Button DockPanel.Dock ="Right" Margin="5" ToolTip="About" Click="ButtonAbout_Click">
                 <Viewbox Width="18" Height="18">
                     <Canvas Width="24" Height="24">
                         <Path Data="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z" Fill="Black" />
                     </Canvas>
                 </Viewbox>
             </Button>
-            <StackPanel Orientation="Horizontal" Width="525">
+
+            <StackPanel DockPanel.Dock ="Left" Orientation="Horizontal" Width="777">
                 <Button Click="ButtonSend_Click" Padding="5" Margin="5" FontWeight="Bold" IsEnabled="{Binding ElementName=lbPackage, Path=SelectedItems.Count}" Content="Install Selected PKGs"/>
                 <Button Click="ButtonPkgInfo_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=SelectedItems.Count}" FontWeight="Bold">PKG Info</Button>
 
             </StackPanel>
-            <StackPanel Width="320" Orientation="Horizontal" Margin="300,0,5,0" >
-                <Button Click="ButtonClearListItems_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=Items.Count}" Width="114" FontWeight="Bold">Clear All</Button>
-                <Button Click="ButtonShampoo_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=Items.Count}" Width="178" FontWeight="Bold">Shampoo File Name!</Button>
+            <StackPanel DockPanel.Dock ="Right" Width="405" Orientation="Horizontal"  >
+                <Button Click="ButtonRefresh_Click" Padding="5" Margin="5" Width="97" FontWeight="Bold" IsEnabled="{Binding ElementName=tbFolder, Path=Text.Length}">Reload</Button>
+                <Button Click="ButtonClearListItems_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=Items.Count}" Width="89" FontWeight="Bold">Clear All</Button>
+                <Button Click="ButtonShampoo_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=Items.Count}" Width="147" FontWeight="Bold">Shampoo File Name!</Button>
             </StackPanel>
         </DockPanel>
 

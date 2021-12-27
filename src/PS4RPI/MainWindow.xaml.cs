@@ -19,6 +19,8 @@ using System.Text.RegularExpressions;
 using System.Windows.Controls;
 using System.Collections;
 using System.Windows.Data;
+using System.Diagnostics;
+using System.Windows.Input;
 
 
 //https://gist.github.com/flatz/60956f2bf1351a563f625357a45cd9c8
@@ -127,8 +129,13 @@ namespace PS4RPIReloaded
             try
             {
                 var settings = new SettingsWindow() { Owner = this };
+
                 if (argAutostart || settings.ShowDialog().GetValueOrDefault())
                 {
+                    if (settings.PcIp == null || settings.Ps4Ip == null || settings.Folder == null)
+                    {
+                        settings.ShowDialog().GetValueOrDefault();
+                    }
                     //todo validate all
                     pcip = settings.PcIp;
                     pcport = settings.PcPort;
@@ -154,14 +161,16 @@ namespace PS4RPIReloaded
             catch (Exception ex)
             {
                 var message = ex.Message;
-                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+             
+                MessageBox.Show(message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);                
                 Application.Current.Shutdown(0);
                 return;
             }
             finally
-            {
+            {                
                 IsBusy = false;
             }
+            
         }
 
         private void Dispatcher_ShutdownStarted(object sender, EventArgs e)
@@ -433,8 +442,23 @@ namespace PS4RPIReloaded
             ProgressTotal = 0;
             baseLength = 0;
 
+
+            IList<string> iList = new[]
+                {
+                    "Carlton", "Alison", "Bob", "Eric", "David"
+                };
+
+            // Use the custom extensions:
+
+            // Sort in-place, by string length
+            iList.Sort((s1, s2) => s1.Length.CompareTo(s2.Length));
+
+
+            
             // download by title, install order goes from game -> patch -> DLCs 
-            List<PkgFile> sortedPackages = (lbPackage.SelectedItems as List<PkgFile>)
+            List<PkgFile> sortedPackages = new List<PkgFile>();
+            foreach (PkgFile f in lbPackage.SelectedItems) sortedPackages.Add(f);            
+            sortedPackages = sortedPackages
                 .OrderBy(x => x.Title)
                 .ThenBy(x => x.Type).ToList();
 
@@ -513,6 +537,7 @@ namespace PS4RPIReloaded
                                 if (progress.transferred >= progress.length_total)
                                 {
                                     tbStats.Text += "Transfer is completed!\n";
+                                    pkg.ProgressXfer = 100;
                                     baseLength += progress.length_total;
                                     bCont = false;
                                 }
@@ -530,7 +555,11 @@ namespace PS4RPIReloaded
 
         private async void ButtonOpenDirectory_Click(object sender, RoutedEventArgs e)
         {
- 
+            OpenDirectory();
+        }
+
+        private async void OpenDirectory()
+        {
             using (var dialog = new System.Windows.Forms.FolderBrowserDialog())
             {
                 if (!string.IsNullOrEmpty(pcfolder))
@@ -544,6 +573,8 @@ namespace PS4RPIReloaded
             {
                 IsBusy = true;
                 ProgressTotal = 0;
+                pkg_list.Clear();
+                RootDirectoryItems.Clear();
                 await LoadFileList(false);
             }
             catch (Exception ex)
@@ -554,7 +585,6 @@ namespace PS4RPIReloaded
             {
                 IsBusy = false;
             }
-
         }
 
         private async void ButtonPkgInfo_Click(object sender, RoutedEventArgs e)
@@ -679,42 +709,34 @@ namespace PS4RPIReloaded
                 }
                 await ReadPackageFilesFromFileList(file_list.ToArray());
             }
-        }
-
-        private void lbPackage_UnloadingRow(object sender, System.Windows.Controls.DataGridRowEventArgs e)
-        {
-            IsBusy = true;
-            if (((DataGrid)sender).SelectedItem != null || ((DataGrid)sender).CurrentItem == null)
-            {                
-                IsBusy = false;
-                return;
-            }
-
-            RemovePkgFromList((PkgFile)e.Row.DataContext);
-            IsBusy = false;
+            tbFolder.Text = "[Filtered]";
         }
 
         private void RemovePkgFromList(PkgFile pkg)
         {
+            IsBusy = true;
             pkg_list.RemoveAt(pkg_list.FindIndex(a => a.HardLinkPath.Equals(pkg.HardLinkPath)));
             if (pkg_list.Count <= 0)
             {
                 tbFolder.Text = string.Empty;
             }
+            IsBusy = false;
         }
 
         private void ButtonClearListItems_Click(object sender, RoutedEventArgs e)
         {
             RootDirectoryItems.Clear();
-            pkg_list.Clear();
-            tbStats.Text = string.Empty;            
+            pkg_list.Clear();            
+            tbStats.Text = "All items are cleared";
+            tbFolder.Text = string.Empty;
         }
 
         private void ButtonShampoo_Click(object sender, RoutedEventArgs e)
         {
             int index = 0;
-            foreach(var pkg in pkg_list)
+            for (int i = 0; i < pkg_list.Count; i++)
             {
+                PkgFile pkg = pkg_list[i];
                 try
                 {
                     string newFullPath = Path.Combine(Path.GetDirectoryName(pkg.FilePath), pkg.ShampoodFileName);
@@ -730,10 +752,71 @@ namespace PS4RPIReloaded
             }
         }
 
-        private void OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e)
-        {          
-            
-            ((TextBox) sender).ScrollToEnd();
+
+        private void OnTextChanged(object sender, System.Windows.Controls.TextChangedEventArgs e) => ((TextBox)sender).ScrollToEnd();
+
+        private void ButtonRefresh_Click(object sender, RoutedEventArgs e)
+        {
+            if (!tbFolder.Text.Equals(pcfolder))
+            {
+                OpenDirectory();
+            }
+            else
+            {
+                pkg_list.Clear();
+                RootDirectoryItems.Clear();
+                _ = ReadPackageFilesFromDirectory();
+            }
+        }
+
+        private void lbPackage_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            PkgFile f = (PkgFile)((DataGrid)sender).CurrentItem;
+            string serialStation = "https://serialstation.com/titles/";
+            if ( f != null){
+                serialStation += f.TitleId.Replace("CUSA", @"CUSA/");
+                Process myProcess = new Process();
+                myProcess.StartInfo.UseShellExecute = true;
+                myProcess.StartInfo.FileName = serialStation;
+                myProcess.Start();
+            }
+        }
+
+        private void lbPackage_PreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if(Keyboard.IsKeyDown(Key.LeftCtrl) && Keyboard.IsKeyUp(Key.Delete))
+            {
+                System.Windows.Forms.DialogResult dialogResult = System.Windows.Forms.MessageBox.Show("Delete items from file system?", "Delete?", System.Windows.Forms.MessageBoxButtons.YesNo);
+
+                if(dialogResult == System.Windows.Forms.DialogResult.Yes)
+                {
+                    List<PkgFile> p_list = new List<PkgFile>();
+                    foreach(var f in ((DataGrid)sender).SelectedItems) { p_list.Add((PkgFile)f); }
+                    for(int i = 0; i < p_list.Count; i ++){
+                        try
+                        {
+                            File.Delete(p_list[i].FilePath);
+                            RemovePkgFromList(p_list[i]);
+                            RootDirectoryItems.Remove(p_list[i]);
+                        }
+                        catch(Exception ex)
+                        {
+                            MessageBox.Show(ex.Message);
+                        }                        
+                    }
+                }
+            }
+            else if(e.Key == Key.Delete)
+            {
+                // need to create mirror list to avoid exception as selected items gets deleted. 
+                List<PkgFile> p_list = new List<PkgFile>();
+                foreach(var f in ((DataGrid)sender).SelectedItems) { p_list.Add((PkgFile)f); }
+                for(int i = 0; i < p_list.Count; i++)
+                {
+                    RemovePkgFromList(p_list[i]);
+                    RootDirectoryItems.Remove(p_list[i]);
+                }
+            }
         }
     }
 
@@ -788,10 +871,11 @@ namespace PS4RPIReloaded
             }
         }
     }
-
+/*
     public class RootDirectoryItems : ObservableCollection<RootDirectoryItems>
     {
         // Creating the Tasks collection in this way enables data binding from XAML.
         
-    }
+    }*/
+
 }
