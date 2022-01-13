@@ -1,7 +1,12 @@
 {
   "profiles": {
     "PS4RPI Reloaded": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "\"E:\\[PS4]\\YAKUZA 3 [CUSA15360][Game][v01.00].pkg\" \"E:\\Z\\The.LEGO.Movie.2.Videogame.PS4-DUPLEX CUSA13509 Game-2u.pkg\""
+    },
+    "Pass Arg": {
+      "commandName": "Project",
+      "commandLineArgs": "/lb \"E:\\[PS4]\\YAKUZA 3 [CUSA15360][Game][v01.00].pkg\""
     }
   }
 }

@@ -6,23 +6,23 @@
         xmlns:local="clr-namespace:PS4RPIReloaded"
         xmlns:conv="clr-namespace:PS4RPIReloaded.Converter"
         mc:Ignorable="d"
-        Title="PS4RPI Reloaded" Height="687" Width="1186"
-        MinHeight="300" MinWidth="480"
-        WindowStartupLocation="CenterScreen">
+        Title="PS4RPI Reloaded" Height="800" Width="1200"
+        MinHeight="768" MinWidth="1200"
+        WindowStartupLocation="CenterScreen" KeyDown="Window_KeyDown">
     <Window.Resources>
         <ResourceDictionary>
             <conv:BoolToInverseBoolConverter x:Key="BoolToInverseBool"/>
             <conv:NotNullToBoolConverter x:Key="NotNullToBool"/>
             <conv:ByteSizeToStringConverter x:Key="ByteSizeToString"/>
-        </ResourceDictionary>  
+        </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="0,0,0,0">
         <Grid.RowDefinitions>
             <RowDefinition Height="5"/>
             <RowDefinition Height="Auto"/>
-            <RowDefinition Height="3*"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="1*"/>
+            <RowDefinition Height="407*"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="136*"/>
             <RowDefinition Height="20"/>
         </Grid.RowDefinitions>
 
@@ -52,7 +52,11 @@
 
 
         <GroupBox Grid.Row="2" Header="PKG list" IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolToInverseBool}}">
-            <DataGrid SelectionMode="Extended" x:Name="lbPackage" DisplayMemberPath="Name" ItemsSource="{Binding RootDirectoryItems, Mode=Oneway}" AutoGenerateColumns="False"  CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" AllowDrop="True"  Drop="lbPackage_Drop" MouseDoubleClick="lbPackage_MouseDoubleClick" PreviewKeyUp="lbPackage_PreviewKeyUp">
+            <DataGrid SelectionMode="Extended" x:Name="lbPackage" DisplayMemberPath="Name" ItemsSource="{Binding RootDirectoryItems, Mode=Oneway}" AutoGenerateColumns="False"  CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" AllowDrop="True"  Drop="lbPackage_Drop" MouseDoubleClick="lbPackage_MouseDoubleClick" PreviewKeyUp="lbPackage_PreviewKeyUp" PreviewKeyDown="lbPackage_PreviewKeyDown">
+                <DataGrid.Resources>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DeepSkyBlue"/>
+                    <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DeepSkyBlue"/>
+                </DataGrid.Resources>
                 <DataGrid.ColumnHeaderStyle>
                     <Style TargetType="DataGridColumnHeader">
                         <Setter Property="HorizontalContentAlignment" Value="Center"/>
@@ -63,29 +67,37 @@
                     <DataGridTemplateColumn Header="Progress" Width="80"  >
                         <DataGridTemplateColumn.CellTemplate >
                             <ItemContainerTemplate >
-                                <Grid  >                                    
+                                <Grid  >
                                     <ProgressBar  Minimum="0" Maximum="100"  Value="{Binding ProgressXfer, UpdateSourceTrigger=PropertyChanged}" />
                                 </Grid>
                             </ItemContainerTemplate>
                         </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>                    
+                    </DataGridTemplateColumn>
                     <DataGridTextColumn Header="Length" Width="Auto" IsReadOnly="True" Binding="{Binding Length, Mode=OneTime, Converter={StaticResource ByteSizeToString}}"/>
-                    <DataGridTextColumn Header="Type" Width="Auto" Binding="{Binding Type, Mode=OneTime}"/>
-                    <DataGridTextColumn Header="TitleID" Width="Auto" Binding="{Binding TitleId, Mode=OneTime}"/>
-                    <DataGridTextColumn Header="Title" Width="Auto" Binding="{Binding Title, Mode=OneTime}"/>
-                    <DataGridTextColumn Header="Version" Width="Auto" Binding="{Binding Version, Mode=OneTime}"/>
+                    <DataGridTextColumn Header="Type" Width="Auto" IsReadOnly="True" Binding="{Binding Type, Mode=OneTime}"/>
+                    <DataGridTextColumn Header="TitleID" Width="Auto" IsReadOnly="True" Binding="{Binding TitleId, Mode=OneTime}"/>
+                    <DataGridTextColumn Header="Title" Width="Auto" IsReadOnly="True" Binding="{Binding Title, Mode=OneTime}"/>
+                    <DataGridTextColumn Header="Version" Width="Auto" IsReadOnly="True" Binding="{Binding Version, Mode=OneTime}"/>
+                    <DataGridTextColumn Header="Version" Width="Auto" IsReadOnly="True" Binding="{Binding Version, Mode=OneTime}"/>
+                    <DataGridTemplateColumn Header="Region" Width="Auto" IsReadOnly="True">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Image Height="15" Width="15" Source="{Binding RegionIcon}"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
 
-                    <DataGridTemplateColumn Header="File" Width="Auto" >
+                    <DataGridTemplateColumn Header="File" Width="Auto" IsReadOnly="True" >
                         <DataGridTemplateColumn.CellTemplate >
                             <ItemContainerTemplate >
                                 <Grid  Background="{Binding Background, UpdateSourceTrigger=PropertyChanged}">
-                                    <TextBlock Foreground="Black" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsEnabled="False">                               
+                                    <TextBlock Foreground="Black" Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsEnabled="False">
                                     </TextBlock>
                                 </Grid>
                             </ItemContainerTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="File Shampoo (Preview)" Width="Auto" Binding="{Binding ShampoodFileName, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="File Shampoo (Preview)" Width="Auto" IsReadOnly="True" Binding="{Binding ShampoodFileName, Mode=OneWay}"/>
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
@@ -98,16 +110,18 @@
                     </Canvas>
                 </Viewbox>
             </Button>
+            <StackPanel DockPanel.Dock ="Top" Orientation="Horizontal" HorizontalAlignment="Left" Width="Auto" Height="40">
+                <Button Click="ButtonSend_Click" Padding="5" Margin="5" FontWeight="Bold" HorizontalAlignment="Left" IsEnabled="{Binding ElementName=lbPackage, Path=SelectedItems.Count}" Content="Install Selected PKGs"/>
+                <Button Click="ButtonPkgInfo_Click" Padding="5" Margin="5" HorizontalAlignment="Left" IsEnabled="{Binding ElementName=lbPackage, Path=SelectedItems.Count}" FontWeight="Bold">PKG Info</Button>         
 
-            <StackPanel DockPanel.Dock ="Left" Orientation="Horizontal" Width="777">
-                <Button Click="ButtonSend_Click" Padding="5" Margin="5" FontWeight="Bold" IsEnabled="{Binding ElementName=lbPackage, Path=SelectedItems.Count}" Content="Install Selected PKGs"/>
-                <Button Click="ButtonPkgInfo_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=SelectedItems.Count}" FontWeight="Bold">PKG Info</Button>
-
-            </StackPanel>
-            <StackPanel DockPanel.Dock ="Right" Width="405" Orientation="Horizontal"  >
-                <Button Click="ButtonRefresh_Click" Padding="5" Margin="5" Width="97" FontWeight="Bold" IsEnabled="{Binding ElementName=tbFolder, Path=Text.Length}">Reload</Button>
-                <Button Click="ButtonClearListItems_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=Items.Count}" Width="89" FontWeight="Bold">Clear All</Button>
-                <Button Click="ButtonShampoo_Click" Padding="5" Margin="5" IsEnabled="{Binding ElementName=lbPackage, Path=Items.Count}" Width="147" FontWeight="Bold">Shampoo File Name!</Button>
+            
+                <Button Click="ButtonRefresh_Click" Padding="0" Width ="100" Margin ="5" FontWeight="Bold" IsEnabled="{Binding Text.Length, ElementName=tbFolder}" Content="Reload"/>
+                <Button Click="ButtonSelectAll" Padding="0" Margin ="5" Width="100" FontWeight="Bold" IsEnabled="{Binding Items.Count, ElementName=lbPackage}" Content="Toggle All"/>
+                <Button Click="ButtonClearListItems_Click" Padding="0" Margin="5" IsEnabled="{Binding Items.Count, ElementName=lbPackage}" Width="100" FontWeight="Bold" Content="Clear All"/>
+                <Button Click="ButtonShampoo_Click" Padding="0" Margin="5" IsEnabled="{Binding Items.Count, ElementName=lbPackage}" Width="140" FontWeight="Bold" Content="Shampoo Files!"/>
+                <Button Padding ="0" Margin="3" Width="40" Height="30" Click="ButtonSettings_Click">
+                    <Image Source="Resources\settings32.png" IsEnabled="True"></Image>
+                </Button>
             </StackPanel>
         </DockPanel>
 
