@@ -1,10 +1,11 @@
 {
   "version": 2,
-  "dgSpecHash": "Y/kh/X3nClsDdKUyxxlJcnmdyrxPdQSVrt/rJBJHx7h9IdudXeFNKn49BQ5y7CeSp9s9g8Y3QA9DpSyQNp7YQw==",
+  "dgSpecHash": "D0FPltzg+fw8MaYwln3tv5Va6YW4FvbhkWT2Zp4C2ohw41kahq7xpWoUDwsTCAjXZF/PteKnwJ+1HNx0Gv4htg==",
   "success": true,
   "projectFilePath": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI Reloaded.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Jay Jun\\.nuget\\packages\\bytesize\\2.1.1\\bytesize.2.1.1.nupkg.sha512",
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\cliwrap\\3.4.0\\cliwrap.3.4.0.nupkg.sha512",
     "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft-windowsapicodepack-core\\1.1.4\\microsoft-windowsapicodepack-core.1.1.4.nupkg.sha512",
     "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft-windowsapicodepack-shell\\1.1.4\\microsoft-windowsapicodepack-shell.1.1.4.nupkg.sha512"
   ],

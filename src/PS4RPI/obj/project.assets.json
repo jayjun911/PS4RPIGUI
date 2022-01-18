@@ -11,6 +11,15 @@
           "lib/netstandard2.1/ByteSize.dll": {}
         }
       },
+      "CliWrap/3.4.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp3.0/CliWrap.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp3.0/CliWrap.dll": {}
+        }
+      },
       "Microsoft-WindowsAPICodePack-Core/1.1.4": {
         "type": "package",
         "compile": {
@@ -60,6 +69,27 @@
         "lib/netstandard2.0/ByteSize.xml",
         "lib/netstandard2.1/ByteSize.dll",
         "lib/netstandard2.1/ByteSize.xml"
+      ]
+    },
+    "CliWrap/3.4.0": {
+      "sha512": "qSTJgg02Y++9f4nor+QeWptwkAT+2cpnG9Tv3TY1l4oF22RcJPzzFn65ty3LtD/L61BPrIB42/ZKhb6m1dPgoQ==",
+      "type": "package",
+      "path": "cliwrap/3.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Readme.md",
+        "cliwrap.3.4.0.nupkg.sha512",
+        "cliwrap.nuspec",
+        "favicon.png",
+        "lib/net461/CliWrap.dll",
+        "lib/net461/CliWrap.xml",
+        "lib/netcoreapp3.0/CliWrap.dll",
+        "lib/netcoreapp3.0/CliWrap.xml",
+        "lib/netstandard2.0/CliWrap.dll",
+        "lib/netstandard2.0/CliWrap.xml",
+        "lib/netstandard2.1/CliWrap.dll",
+        "lib/netstandard2.1/CliWrap.xml"
       ]
     },
     "Microsoft-WindowsAPICodePack-Core/1.1.4": {
@@ -112,6 +142,7 @@
   "projectFileDependencyGroups": {
     ".NETCoreApp,Version=v3.1": [
       "ByteSize >= 2.1.1",
+      "CliWrap >= 3.4.0",
       "Microsoft-WindowsAPICodePack-Shell >= 1.1.4"
     ]
   },
@@ -157,6 +188,10 @@
           "ByteSize": {
             "target": "Package",
             "version": "[2.1.1, )"
+          },
+          "CliWrap": {
+            "target": "Package",
+            "version": "[3.4.0, )"
           },
           "Microsoft-WindowsAPICodePack-Shell": {
             "target": "Package",
