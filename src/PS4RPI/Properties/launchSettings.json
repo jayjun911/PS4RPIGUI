@@ -2,7 +2,7 @@
   "profiles": {
     "PS4RPI Reloaded": {
       "commandName": "Project",
-      "commandLineArgs": "\"E:\\[PS4]\\YAKUZA 3 [CUSA15360][Game][v01.00].pkg\" \"E:\\Z\\The.LEGO.Movie.2.Videogame.PS4-DUPLEX CUSA13509 Game-2u.pkg\""
+      "commandLineArgs": "\"c:\\games\\launchbox\\Games\\Sony Playstation 4\\Guacamelee! Super Turbo Championship Edition [CUSA00319][Patch][v01.03].pkg\""
     },
     "Pass Arg": {
       "commandName": "Project",

@@ -21,10 +21,9 @@ using System.Collections;
 using System.Windows.Data;
 using System.Diagnostics;
 using System.Windows.Input;
-using System.Drawing;
-using System.Windows.Media.Imaging;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using Microsoft.VisualBasic.FileIO;
+using CliWrap;
 
 
 //https://gist.github.com/flatz/60956f2bf1351a563f625357a45cd9c8
@@ -82,6 +81,7 @@ namespace PS4RPIReloaded
         private bool files_mode;
         private CancellationTokenSource tokenSource;
         private string staticTitle;
+        private string override_folder;
 
         public static ObservableCollection<object> RootDirectoryItems { get; } = new ObservableCollection<object>();
 
@@ -94,13 +94,65 @@ namespace PS4RPIReloaded
 
             foreach(var arg in args)
             {
-                if(File.Exists(arg)) { files_in.Add(arg); }
+                if(File.Exists(arg)) 
+                {
+                    if(new FileInfo(arg).Length <= 0)
+                    {
+                        override_folder = GetRealPath(arg);
+                        files_in.Add(override_folder);
+                    }
+                    else
+                    {
+                        files_in.Add(arg);
+                    }
+                 
+                }
             }
 
             if (files_in.Count > 0) { files_mode = true; }
             
             Title += $" {version}";
             staticTitle = Title;
+        }
+
+        private string GetRealPath(string file)
+        {
+            var stdOutBuffer = new StringBuilder();
+            var stdErrBuffer = new StringBuilder();
+
+            var result = Cli.Wrap("cmd")
+                .WithArguments($"/C dir /al \"{file}\"")
+                .WithStandardOutputPipe(PipeTarget.ToStringBuilder(stdOutBuffer))
+                .WithStandardErrorPipe(PipeTarget.ToStringBuilder(stdErrBuffer))
+                .ExecuteAsync();
+
+            result.Task.Wait();
+            // Contains stdOut/stdErr buffered in-memory as string
+            var stdOut = stdOutBuffer.ToString();
+            var stdErr = stdErrBuffer.ToString();
+            string realPath = file;
+            using(System.IO.StringReader reader = new System.IO.StringReader(stdOut))
+            {
+                string line;
+                while((line = reader.ReadLine()) != null)
+                {
+                    if(line.Contains("<SYMLINK>"))
+                    {
+                        Regex regex = new Regex(@"\[\D\:.+\]");
+
+                        // Step 2: call Match on Regex instance.
+                        Match match = regex.Match(line);
+
+                        // Step 3: test for Success.
+                        if(match.Success)
+                        {
+                            realPath = match.Value.Substring(1,match.Value.Length-2);
+                        }
+                    }                    
+                }
+            }
+
+            return realPath;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -127,7 +179,10 @@ namespace PS4RPIReloaded
                 pcport = settings.PcPort;
                 PsIP = settings.Ps4Ip;
                 pcfolder = settings.Folder.Trim();
+                // override pcfolder value when files are passed as arg
+                if(override_folder != null) pcfolder = Path.GetPathRoot(override_folder);
                 hardlink_dir = Path.Combine(Path.GetPathRoot(pcfolder), ".hardlinks");
+                tbStats.Text += $"Server is setup for {hardlink_dir}\n";
 
                 Title = staticTitle + $" | PC {pcip}:{pcport}";
                 client = new RestClient(PsIP);
@@ -371,7 +426,7 @@ namespace PS4RPIReloaded
             
             string searchRoot = new FileInfo(files_in[0]).DirectoryName;            
             loadDirectory = "[Filtered] in " + searchRoot;
-            tbStats.Text = "";
+            //tbStats.Text = "";
 
             Task task = Task.Run(() =>
             {
