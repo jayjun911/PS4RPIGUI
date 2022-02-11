@@ -1022,8 +1022,9 @@ namespace PS4RPIReloaded
                     hardlink_dir = Path.Combine(Path.GetPathRoot(pcfolder), ".hardlinks");
                     files_mode = false;
                     _ = LoadFileList(files_mode);
+                    isChanged = true;
                 }
-                if(!pcip.Equals(settings.PcIp) || !pcport.Equals(settings.PcPort))
+                if(isChanged || !pcip.Equals(settings.PcIp) || !pcport.Equals(settings.PcPort) )
                 {
                     RestartServer(settings);
                 }
