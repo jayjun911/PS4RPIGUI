@@ -38,7 +38,7 @@ namespace PS4RPIReloaded
         [DllImport("Kernel32.dll", CharSet = CharSet.Unicode)]
         static extern bool CreateHardLink(string lpFileName, string lpExistingFileName, IntPtr lpSecurityAttributes);
         private const string version = "v1.0";
-        private readonly CancellationTokenSource Cts = new CancellationTokenSource();
+        private CancellationTokenSource Cts = new CancellationTokenSource();
         private string pcip = null;
         private int pcport = 0;
 
@@ -75,7 +75,6 @@ namespace PS4RPIReloaded
             get { return _progressTotal; }
             set { _progressTotal = value; RaisePropertyChanged(); }
         }
-        public List<PkgFile> pkg_list = new List<PkgFile>();
         
         private double baseLength;
         private bool files_mode;
@@ -83,7 +82,8 @@ namespace PS4RPIReloaded
         private string staticTitle;
         private string override_folder;
 
-        public static ObservableCollection<object> RootDirectoryItems { get; } = new ObservableCollection<object>();
+        //public static List<PkgFile> pkg_list = new List<PkgFile>();
+        public static ObservableCollection<PkgFile> pkg_list { get; } = new ObservableCollection<PkgFile>();
 
         public MainWindow(string[] args)
         {
@@ -173,19 +173,38 @@ namespace PS4RPIReloaded
                 if(settings.PcIp == null || settings.Ps4Ip == null || settings.Folder == null)
                 {
                     settings.ShowDialog().GetValueOrDefault();
-                }                
+                }
+                // getting pc location ready
+                pcfolder = settings.Folder.Trim();                
+                if (override_folder != null) pcfolder = Path.GetPathRoot(override_folder);
+                hardlink_dir = Path.Combine(Path.GetPathRoot(pcfolder), ".hardlinks");
+                
+                if (!Directory.Exists(hardlink_dir))
+                {
+                    string drive = Path.GetPathRoot(hardlink_dir);
+                    if (Directory.Exists(drive))
+                    {
+                        Directory.CreateDirectory(hardlink_dir);
+                    }else
+                    {
+                        settings.ShowDialog().GetValueOrDefault();
+                        pcfolder = settings.Folder.Trim();
+                        hardlink_dir = Path.Combine(Path.GetPathRoot(pcfolder), ".hardlinks");
+                    }                    
+                }
+                
+
                 //todo validate all
                 pcip = settings.PcIp;
                 pcport = settings.PcPort;
                 PsIP = settings.Ps4Ip;
-                pcfolder = settings.Folder.Trim();
-                // override pcfolder value when files are passed as arg
-                if(override_folder != null) pcfolder = Path.GetPathRoot(override_folder);
-                hardlink_dir = Path.Combine(Path.GetPathRoot(pcfolder), ".hardlinks");
+                
+                
                 tbStats.Text += $"Server is setup for {hardlink_dir}\n";
 
                 Title = staticTitle + $" | PC {pcip}:{pcport}";
                 client = new RestClient(PsIP);
+                
                 server = new SimpleServer(new IPAddress[] { IPAddress.Parse(pcip) }, pcport, hardlink_dir);
                 await server.Start(Cts.Token);
                 //enumerate files
@@ -243,20 +262,25 @@ namespace PS4RPIReloaded
             string title = CleanFileName(psfo.Title);
             PKGType pkgType = ps4pkg.PKG_Type;
             string content_id = psfo.ContentID;
+            string full_content_id = content_id;
             string version = string.Empty;
+            string app_version = string.Empty;
 
-            // item already exists, then don't create
-            if(pkg_list.FindIndex(a => a.FilePath.Equals(pkg_file)) >= 0) { return null; }
+            // item already exists, then don't create            
+            if (pkg_list.IndexOf(pkg_list.Where(a => a.FilePath.Equals(pkg_file)).FirstOrDefault()) >= 0) { 
+                return null; 
+            }
 
             // item with duplicated hardlink, get new name
-            string hardlink_path = Path.Combine(hardlink_dir, content_id + ".pkg");
-            if(pkg_list.FindIndex(a => a.HardLinkPath.Equals(hardlink_path)) >= 0)
+            string hardlink_path = Path.Combine(hardlink_dir, content_id + ".pkg");            
+            if (pkg_list.IndexOf(pkg_list.Where(a => a.HardLinkPath.Equals(hardlink_path)).FirstOrDefault()) >= 0)
             {
                 string newName = GetNewFileNameForDupe(hardlink_path);
                 hardlink_path = Path.Combine(hardlink_dir, newName);
             }
-
-            if(pkgType == PKGType.Addon_Theme) { content_id = GetFullContentID(ps4pkg, psfo); }
+            full_content_id = GetFullContentID(ps4pkg, psfo);
+            if (pkgType == PKGType.Addon_Theme) { content_id = full_content_id; }
+            app_version = full_content_id.Substring(full_content_id.LastIndexOf("-V") + 2);
 
             string shampoodName = ShampoooFileName(title, psfo.TITLEID, content_id, pkgType, psfo.APP_VER);
             if(shampoodName.Equals(new FileInfo(pkg_file).Name)) { bgColor = "Azure"; }
@@ -266,6 +290,7 @@ namespace PS4RPIReloaded
                 FilePath = pkg_file,
                 Length = ByteSizeLib.ByteSize.FromBytes(new FileInfo(pkg_file).Length),
                 ContentId = content_id,
+                FullContentId = full_content_id,
                 Title = title,
                 TitleId = psfo.TITLEID,
                 Type = pkgType,
@@ -273,7 +298,8 @@ namespace PS4RPIReloaded
                 Version = psfo.APP_VER == string.Empty ? "N/A" : psfo.APP_VER,
                 ShampoodFileName = shampoodName,
                 Background = bgColor,
-                RegionIcon = GetIconPath(content_id)
+                RegionIcon = GetIconPath(content_id),
+                PatchVersion = app_version
             };
         }
 
@@ -322,7 +348,8 @@ namespace PS4RPIReloaded
 
                 //DLC
                 case PKGType.Addon_Theme:
-                    newName = String.Format("{0} [{1}][{2}][{3}]", title, title_id, "DLC", content_id);
+                    //newName = String.Format("{0} [{1}][{2}][{3}]", title, title_id, "DLC", content_id);
+                    newName = String.Format("{0} [{1}][{2}]", title, title_id, "DLC");
                     break;
                 case PKGType.Unknown:
                 default:
@@ -351,7 +378,8 @@ namespace PS4RPIReloaded
             int suffix = 0;
             string newName;
             string pattern = Path.GetFileNameWithoutExtension(name);
-            List<PkgFile> copiedFileSet = pkg_list.FindAll(a => a.HardLinkPath.Contains(pattern));
+            
+            List<PkgFile> copiedFileSet = pkg_list.Where(a => a.HardLinkPath.Contains(pattern)).ToList();
             if(copiedFileSet.Count == 0)
             {
                 return name;
@@ -390,7 +418,7 @@ namespace PS4RPIReloaded
         private async Task LoadFileList(bool files_mode)
         {
             IsBusy = true;
-            RootDirectoryItems.Clear();
+            pkg_list.Clear();
 
             if(files_mode)
             {
@@ -414,6 +442,7 @@ namespace PS4RPIReloaded
         private void SortPackageListView()
         {
             CollectionView view = (CollectionView)CollectionViewSource.GetDefaultView(lbPackage.ItemsSource);
+            if (view == null) return;
             view.SortDescriptions.Add(new SortDescription("Title", ListSortDirection.Ascending));
             view.SortDescriptions.Add(new SortDescription("Type", ListSortDirection.Ascending));
         }
@@ -423,28 +452,33 @@ namespace PS4RPIReloaded
             
             // this function is for a single file process
             if (files_in.Count != 1 ) { return Task.CompletedTask; }
+            // if folder is passed
+            if (Directory.Exists(files_in[0]))
+            {
+                return ReadPackageFilesFromDirectory(files_in[0]);
+            }
+
             
             string searchRoot = new FileInfo(files_in[0]).DirectoryName;            
             loadDirectory = "[Filtered] in " + searchRoot;
-            //tbStats.Text = "";
+            
 
-            Task task = Task.Run(() =>
+            Task task = Task.Run((Action)(() =>
             {
                 PkgFile main_pkg = null;
-                Dispatcher.Invoke(() =>
+                Dispatcher.Invoke((Action)(() =>
                 {
                     main_pkg = GetPackageFromFile(files_in[0]);
                     
                     // dupe exist then main_pkg == null
                     if(main_pkg != null)
                     {
-                        pkg_list.Add(main_pkg);
-                        RootDirectoryItems.Add(main_pkg);
+                        MainWindow.pkg_list.Add(main_pkg);                        
 
                         string[] all_packages = Directory.GetFiles(searchRoot, "*.pkg", System.IO.SearchOption.AllDirectories)
                                 .Where(f => f.Contains(main_pkg.TitleId))
-                                .Where(f => !f.Equals(main_pkg.FilePath)).ToArray();                    
-                        
+                                .Where(f => !f.Equals(main_pkg.FilePath)).ToArray();
+
                         ProgressTotal = 0;
                         pbTransferTotal.Maximum = all_packages.Length;
                         
@@ -455,26 +489,25 @@ namespace PS4RPIReloaded
                                 PkgFile item = GetPackageFromFile(file);
                                 if(item == null) { continue; }
 
-                                pkg_list.Add(item);
                                 tbStats.Text += $"Processing... {file}\n";
-                                RootDirectoryItems.Add(item);
+                                MainWindow.pkg_list.Add(item);                                
                                 ProgressTotal++;
                             }
                             catch(Exception ex)
                             {
-                                tbStats.Text += $"Exception raised while processing {file}: {ex.Message}\n";                                
+                                tbStats.Text += $"Exception raised while processing {file}: {ex.Message}\n";
                                 ProgressTotal++;
                                 continue;
                             }                       
                         }
                     }
-                               
+
                     SortPackageListView();
                     IsBusy = false;
                     tbStats.Text += "Reading completed\n";
                     ProgressTotal = 0;
-                });              
-            });
+                }));              
+            }));
             return task;
         }
 
@@ -490,6 +523,16 @@ namespace PS4RPIReloaded
             IsBusy = false;
         }
 
+        private async Task ReadPackageFilesFromDirectory(string directory)
+        {
+            IsBusy = true;
+            string[] file_list = Directory.GetFiles(directory, "*.pkg");
+            pbTransferTotal.Maximum = file_list.Length;
+            await ReadPackageFilesFromFileList(file_list);
+            IsBusy = false;
+        }
+
+
         private async Task ReadPackageFilesFromFileList(string[] file_list)
         {
             IsBusy = true;
@@ -498,34 +541,34 @@ namespace PS4RPIReloaded
             tokenSource = new CancellationTokenSource();
             CancellationToken token = tokenSource.Token;
             bool isAborted = false;
-            Task t = Task.Run(() =>
+            Task t = Task.Run((Action)(() =>
             {
                 foreach(string file in file_list)
                 {
-                    try { 
+                    try {                        
+
                         PkgFile item = GetPackageFromFile(file);
-                        if(item == null) { continue; }
-                        pkg_list.Add(item);
-                        Dispatcher.Invoke(() =>
+                        if(item == null) { continue; }                        
+                        Dispatcher.Invoke((Action)(() =>
                         {
                             tbStats.Text += $"Processing... {file}\n";
-                            RootDirectoryItems.Add(item);
+                            MainWindow.pkg_list.Add(item);
                             ProgressTotal++;
-                        });
+                        }));
 
                     }
                     catch(Exception ex)
                     {
                         Dispatcher.Invoke(() =>
                         {
-                            tbStats.Text += $"Exception raised while processing {file}: {ex.Message}\n";            
+                            tbStats.Text += $"Exception raised while processing {file}: {ex.Message}\n";
                             ProgressTotal++;
                         });
                         continue;
                     }
                 if(token.IsCancellationRequested) { isAborted = true;  return; }
                 }
-            });
+            }));
             
             await Task.WhenAny(t);
 
@@ -677,8 +720,7 @@ namespace PS4RPIReloaded
             {
                 IsBusy = true;
                 ProgressTotal = 0;
-                pkg_list.Clear();
-                RootDirectoryItems.Clear();
+                pkg_list.Clear();                
                 
                 await LoadFileList(false);
 
@@ -810,11 +852,21 @@ namespace PS4RPIReloaded
             string[] filePaths = e.Data.GetData(DataFormats.FileDrop) as string[];
             files_in.Clear();
             files_in.AddRange(filePaths);
-             
+            List<string> files_only = new List<string>();     
+
             if(files_in.Count == 1)
             { await ReadPackageFilesFromFileInput();}
-            else { await Task.FromResult(ReadPackageFilesFromFileList(files_in.ToArray())); }
-    
+            else 
+            {    
+                // process folder first
+                foreach(string file in files_in)
+                {
+                    if (Directory.Exists(file)){ await ReadPackageFilesFromDirectory(file); } else { files_only.Add(file); }
+                } 
+                
+                // then the rest of files
+                await Task.FromResult(ReadPackageFilesFromFileList(files_only.ToArray())); 
+            }            
             tbFolder.Text = "[Filtered]";
             IsBusy = false;
             
@@ -823,18 +875,21 @@ namespace PS4RPIReloaded
         private void RemovePkgFromList(PkgFile pkg)
         {
             IsBusy = true;
-            pkg_list.RemoveAt(pkg_list.FindIndex(a => a.HardLinkPath.Equals(pkg.HardLinkPath)));
-            if(pkg_list.Count <= 0)
+            var item = pkg_list.Where(a => a.HardLinkPath.Equals(pkg.HardLinkPath)).FirstOrDefault();
+            if (item != null)
             {
-                tbFolder.Text = string.Empty;
+                pkg_list.Remove(item);
+                if (pkg_list.Count <= 0)
+                {
+                    tbFolder.Text = string.Empty;
+                }
             }
             IsBusy = false;
         }
 
         private void ButtonClearListItems_Click(object sender, RoutedEventArgs e)
         {
-            RootDirectoryItems.Clear();
-            pkg_list.Clear();
+            pkg_list.Clear();            
             tbStats.Text = "All items are cleared";
             tbFolder.Text = string.Empty;
         }
@@ -850,7 +905,7 @@ namespace PS4RPIReloaded
                     string newFullPath = Path.Combine(Path.GetDirectoryName(pkg.FilePath), pkg.ShampoodFileName);
                     File.Move(pkg.FilePath, newFullPath);
                     pkg.Name = pkg.ShampoodFileName;
-                    ((PkgFile)RootDirectoryItems[index]).FilePath = newFullPath;
+                    pkg_list[index].FilePath = newFullPath;
                     pkg.Background = "Azure";
                 }
                 catch(Exception ex)
@@ -872,7 +927,6 @@ namespace PS4RPIReloaded
             else
             {
                 pkg_list.Clear();
-                RootDirectoryItems.Clear();
                 _ = ReadPackageFilesFromDirectory();
             }
         }
@@ -896,9 +950,8 @@ namespace PS4RPIReloaded
                     {
                         try
                         {
-                            FileSystem.DeleteFile(p_list[i].FilePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);
-                            RemovePkgFromList(p_list[i]);
-                            RootDirectoryItems.Remove(p_list[i]);
+                            FileSystem.DeleteFile(p_list[i].FilePath, UIOption.OnlyErrorDialogs, RecycleOption.SendToRecycleBin);                            
+                            pkg_list.Remove(p_list[i]);
                         }
                         catch(Exception ex)
                         {
@@ -914,8 +967,7 @@ namespace PS4RPIReloaded
                 foreach(var f in ((DataGrid)sender).SelectedItems) { p_list.Add((PkgFile)f); }
                 for(int i = 0; i < p_list.Count; i++)
                 {
-                    RemovePkgFromList(p_list[i]);
-                    RootDirectoryItems.Remove(p_list[i]);
+                    pkg_list.Remove(p_list[i]);
                 }
             }
         }
@@ -940,68 +992,24 @@ namespace PS4RPIReloaded
                 myProcess.Start();
             }
         }
-
-
-        public class PkgFile :INotifyPropertyChanged, IComparable
-        {
-            public string FilePath { get; set; }
-            public string ShampoodFileName { get; set; }
-            public ByteSizeLib.ByteSize Length { get; set; }
-            public string Name { get { return Path.GetFileName(FilePath); } set { FilePath = Path.Combine(Path.GetDirectoryName(FilePath), value); RaisePropertyChanged(); } }
-            public string HardLinkPath { get; set; }
-            public PKGType Type { get; set; }
-            public string Title { get; set; }
-            public string TitleId { get; set; }
-            public string ContentId { get; set; }
-            private double _progress;
-            private string _regionIcon;
-            public string RegionIcon
-            {
-                get { return _regionIcon; } 
-                set { _regionIcon = value;  RaisePropertyChanged(); } 
-            }
-            public double ProgressXfer
-            {
-                get { return _progress; }
-                set { _progress = value; RaisePropertyChanged(); }
-            }
-
-            private void RaisePropertyChanged([CallerMemberName] string propertyName = "")
-            {
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-            }
-
-            public int CompareTo(PKGType obj)
-            {
-                return Type.CompareTo(obj);
-            }
-
-            int IComparable.CompareTo(object obj)
-            {
-                throw new NotImplementedException();
-            }
-
-            public event PropertyChangedEventHandler PropertyChanged;
-            public string Version { get; set; }
-            private string _background;
-            public string Background
-            {
-                get
-                {
-                    return _background;
-                }
-
-                set
-                {
-                    _background = value;
-                    RaisePropertyChanged();
-                }
-            }
-        }
-
+                
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if(Keyboard.IsKeyDown(Key.Escape)) tokenSource.Cancel();
+            if (Keyboard.IsKeyDown(Key.Escape))
+            {
+                tokenSource.Cancel();
+            }
+            else if (Keyboard.IsKeyDown(Key.LeftCtrl) && e.Key == Key.A)
+            {
+                if (lbPackage.SelectedItems.Count < lbPackage.Items.Count)
+                {
+                    lbPackage.SelectAll();
+                }
+                else
+                {
+                    lbPackage.UnselectAll();
+                }
+            }
         }
 
         private void ButtonSettings_Click(object sender, RoutedEventArgs e)
@@ -1037,9 +1045,14 @@ namespace PS4RPIReloaded
                 server.Stop(new CancellationTokenSource(2000).Token).GetAwaiter().GetResult();
             Cts.Cancel();
             Thread.Sleep(1000);
+            Cts = new CancellationTokenSource();
             pcip = settings.PcIp;
             pcport = settings.PcPort;
             Title = staticTitle + $" | PC {pcip}:{pcport}";
+            if (!Directory.Exists(hardlink_dir))
+            {
+                Directory.CreateDirectory(hardlink_dir);
+            }
             server = new SimpleServer(new IPAddress[] { IPAddress.Parse(pcip) }, pcport, hardlink_dir);
             await server.Start(Cts.Token);
         }
@@ -1049,13 +1062,87 @@ namespace PS4RPIReloaded
 
             if(lbPackage.SelectedItems.Count < lbPackage.Items.Count)
             {
-                lbPackage.SelectAll();
-               
+                lbPackage.SelectAll();               
             }
             else
             {
                 lbPackage.UnselectAll();
             }
         }
+
+        private void tbStats_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (Keyboard.IsKeyDown(Key.LeftCtrl) && e.Key == Key.A)
+            {
+                if (lbPackage.SelectedItems.Count < lbPackage.Items.Count)
+                {
+                    lbPackage.SelectAll();
+                }
+                else
+                {
+                    lbPackage.UnselectAll();
+                }
+            }
+        }
+
+        public class PkgFile : INotifyPropertyChanged, IComparable
+        {
+            public string FilePath { get; set; }
+            public string ShampoodFileName { get; set; }
+            public ByteSizeLib.ByteSize Length { get; set; }
+            public string Name { get { return Path.GetFileName(FilePath); } set { FilePath = Path.Combine(Path.GetDirectoryName(FilePath), value); RaisePropertyChanged(); } }
+            public string HardLinkPath { get; set; }
+            public PKGType Type { get; set; }
+            public string Title { get; set; }
+            public string TitleId { get; set; }
+            public string ContentId { get; set; }
+            public string FullContentId { get; set; }
+            private double _progress;
+            private string _regionIcon;
+            public string RegionIcon
+            {
+                get { return _regionIcon; }
+                set { _regionIcon = value; RaisePropertyChanged(); }
+            }
+            public double ProgressXfer
+            {
+                get { return _progress; }
+                set { _progress = value; RaisePropertyChanged(); }
+            }
+            private void RaisePropertyChanged([CallerMemberName] string propertyName = "")
+            {
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+            }
+
+            public int CompareTo(PKGType obj)
+            {
+                return Type.CompareTo(obj);
+            }
+
+            int IComparable.CompareTo(object obj)
+            {
+                throw new NotImplementedException();
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            public string Version { get; set; }
+            public string PatchVersion { get; set; }
+            private string _background;
+            public string Background
+            {
+                get
+                {
+                    return _background;
+                }
+                set
+                {
+                    _background = value;
+                    RaisePropertyChanged();
+                }
+            }
+
+        }
+
+
     }
 }

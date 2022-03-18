@@ -1,13 +1,17 @@
 {
   "version": 2,
-  "dgSpecHash": "D0FPltzg+fw8MaYwln3tv5Va6YW4FvbhkWT2Zp4C2ohw41kahq7xpWoUDwsTCAjXZF/PteKnwJ+1HNx0Gv4htg==",
+  "dgSpecHash": "gXJ2exhHMxtESDUKz+Tbg8lagXihFT3rphHnA7Jf93boXQryDsSrl3DsBSNj+59j3mMwxxv92R/0iqxsfIQm4A==",
   "success": true,
   "projectFilePath": "C:\\Code\\PS4RPIGUI\\src\\PS4RPI\\PS4RPI Reloaded.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Jay Jun\\.nuget\\packages\\bytesize\\2.1.1\\bytesize.2.1.1.nupkg.sha512",
     "C:\\Users\\Jay Jun\\.nuget\\packages\\cliwrap\\3.4.0\\cliwrap.3.4.0.nupkg.sha512",
     "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft-windowsapicodepack-core\\1.1.4\\microsoft-windowsapicodepack-core.1.1.4.nupkg.sha512",
-    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft-windowsapicodepack-shell\\1.1.4\\microsoft-windowsapicodepack-shell.1.1.4.nupkg.sha512"
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft-windowsapicodepack-shell\\1.1.4\\microsoft-windowsapicodepack-shell.1.1.4.nupkg.sha512",
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\3.1.22\\microsoft.netcore.app.host.win-x64.3.1.22.nupkg.sha512",
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.10\\microsoft.aspnetcore.app.ref.3.1.10.nupkg.sha512",
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\3.1.0\\microsoft.windowsdesktop.app.ref.3.1.0.nupkg.sha512",
+    "C:\\Users\\Jay Jun\\.nuget\\packages\\microsoft.netcore.app.ref\\3.1.0\\microsoft.netcore.app.ref.3.1.0.nupkg.sha512"
   ],
   "logs": []
 }

@@ -52,7 +52,7 @@
 
 
         <GroupBox Grid.Row="2" Header="PKG list" IsEnabled="{Binding IsBusy, Mode=OneWay, Converter={StaticResource BoolToInverseBool}}">
-            <DataGrid SelectionMode="Extended" x:Name="lbPackage" DisplayMemberPath="Name" ItemsSource="{Binding RootDirectoryItems, Mode=Oneway}" AutoGenerateColumns="False"  CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" AllowDrop="True"  Drop="lbPackage_Drop" MouseDoubleClick="lbPackage_MouseDoubleClick" PreviewKeyUp="lbPackage_PreviewKeyUp" PreviewKeyDown="lbPackage_PreviewKeyDown">
+            <DataGrid SelectionMode="Extended" x:Name="lbPackage" DisplayMemberPath="Name" ItemsSource="{Binding pkg_list, Mode=Oneway}" AutoGenerateColumns="False"  CanUserReorderColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="False" AllowDrop="True"  Drop="lbPackage_Drop" MouseDoubleClick="lbPackage_MouseDoubleClick" PreviewKeyUp="lbPackage_PreviewKeyUp" PreviewKeyDown="lbPackage_PreviewKeyDown">
                 <DataGrid.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DeepSkyBlue"/>
                     <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DeepSkyBlue"/>
@@ -78,7 +78,7 @@
                     <DataGridTextColumn Header="TitleID" Width="Auto" IsReadOnly="True" Binding="{Binding TitleId, Mode=OneTime}"/>
                     <DataGridTextColumn Header="Title" Width="Auto" IsReadOnly="True" Binding="{Binding Title, Mode=OneTime}"/>
                     <DataGridTextColumn Header="Version" Width="Auto" IsReadOnly="True" Binding="{Binding Version, Mode=OneTime}"/>
-                    <DataGridTextColumn Header="Version" Width="Auto" IsReadOnly="True" Binding="{Binding Version, Mode=OneTime}"/>
+                    <DataGridTextColumn Header="PatchVersion" Width="Auto" IsReadOnly="True" Binding="{Binding PatchVersion, Mode=OneTime}"/>
                     <DataGridTemplateColumn Header="Region" Width="Auto" IsReadOnly="True">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -86,7 +86,6 @@
                             </DataTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-
                     <DataGridTemplateColumn Header="File" Width="Auto" IsReadOnly="True" >
                         <DataGridTemplateColumn.CellTemplate >
                             <ItemContainerTemplate >
@@ -97,7 +96,7 @@
                             </ItemContainerTemplate>
                         </DataGridTemplateColumn.CellTemplate>
                     </DataGridTemplateColumn>
-                    <DataGridTextColumn Header="File Shampoo (Preview)" Width="Auto" IsReadOnly="True" Binding="{Binding ShampoodFileName, Mode=OneWay}"/>
+                    <DataGridTextColumn Header="Content ID" Width="Auto" IsReadOnly="True" Binding="{Binding FullContentId, Mode=OneWay}"/>                    
                 </DataGrid.Columns>
             </DataGrid>
         </GroupBox>
@@ -126,7 +125,7 @@
         </DockPanel>
 
         <GroupBox Grid.Row="4" Header="Result/Debug">
-            <TextBox x:Name="tbStats" IsReadOnly="False" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Visible" TextChanged="OnTextChanged"/>
+            <TextBox x:Name="tbStats" IsReadOnly="True" TextWrapping="Wrap" ScrollViewer.VerticalScrollBarVisibility="Visible" TextChanged="OnTextChanged" KeyUp="tbStats_KeyUp"/>
         </GroupBox>
         <ProgressBar Grid.Row ="5"  Margin="6,5,6,5" x:Name="pbTransferTotal" Minimum="0" Maximum="100" Value="{Binding ProgressTotal, UpdateSourceTrigger=PropertyChanged}">
             <ProgressBar.Effect>

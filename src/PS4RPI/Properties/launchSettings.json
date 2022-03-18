@@ -5,8 +5,7 @@
       "commandLineArgs": "\"c:\\games\\launchbox\\Games\\Sony Playstation 4\\Guacamelee! Super Turbo Championship Edition [CUSA00319][Patch][v01.03].pkg\""
     },
     "Pass Arg": {
-      "commandName": "Project",
-      "commandLineArgs": "/lb \"E:\\[PS4]\\YAKUZA 3 [CUSA15360][Game][v01.00].pkg\""
+      "commandName": "Project"
     }
   }
 }
